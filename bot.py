@@ -148,7 +148,6 @@ def convert_to_symmetric(data, target):
             result += "'"
             data = data // target + 1
     result_1 = ''
-    #lll
     if negative == 1:
         for i in range(len(result)):
             if i < (len(result) - 1):
