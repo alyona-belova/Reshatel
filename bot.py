@@ -196,7 +196,7 @@ def convert_from_symmetric(data, source):
 
 @bot.message_handler(commands=['convert_to'])
 def convert_to(message):
-    target, data = message.text.split()
+    _, target, data = message.text.split()
     target = target.lower()
     if target == 'berg':
         resp = convert_to_bergman(data)
@@ -219,7 +219,7 @@ def convert_to(message):
 
 @bot.message_handler(commands=['convert_from'])
 def convert_from(message):
-    source, data = message.text.split()
+    _, source, data = message.text.split()
     source = source.lower()
     if source == 'berg':
         resp = convert_from_bergman(data)
