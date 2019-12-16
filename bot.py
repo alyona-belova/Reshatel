@@ -289,9 +289,9 @@ def convert_from(message):
 
 @bot.message_handler(content_types=['text'])
 def help(message):
-    resp = "Вот что я могу:\n/convert_to target data - перевод в нетрадиционную СС\n/convert_from" + \
-    " source data - перевод из нетрадиционной СС\ntarget - результирующая СС\nsourсe - исходная СС\ndata - исходное число" + \
-    " СС\nДоступные СС:\nberg - Бергмана\nzecken - Цекендорфа\nfact -" + \
+    resp = "<b>Вот что я могу:</b>\n/convert_to target data - перевод в нетрадиционную СС\n/convert_from" + \
+    " source data - перевод из нетрадиционной СС\n\ntarget - результирующая СС\nsourсe - исходная СС\ndata - исходное число" + \
+    " СС\n\n<b>Доступные СС:</b>\nberg - Бергмана\nzecken - Цекендорфа\nfact -" + \
     " факториальная\n-n - n-ая нега-позиционная\nnC - n-ая симметричная (для обозначения отрицательного числа перед ним ставится апостроф)"
     bot.send_message(message.chat.id, resp, parse_mode='HTML')
 
