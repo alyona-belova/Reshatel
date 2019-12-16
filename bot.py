@@ -26,6 +26,9 @@ def convert_to_bergman(data):
     return result
 
 def convert_from_bergman(data):
+    for ch in data:
+        if ch not in {'0', '1', '.'}:
+            return 'Неверный формат данных'
     Phi = (1 + 5 ** 0.5) / 2
     result = 0
     dot = data.index('.')
@@ -117,14 +120,17 @@ def convert_to_negative(data, target):
     return result
 
 def convert_from_negative(data, source):
-    result = []
-    for number in data:
-        res = 0
-        power = len(number) - 1
-        for digit in number:
-            res += int(digit) * (int(source) ** power)
-            power -= 1
-        result.append(str(res))
+    valid_symbols = []
+    for i in range(abs(int(source))):
+        valid_symbols.append(str(i))
+    for ch in data:
+        if ch not in valid_symbols:
+            return 'Неверный формат данных'
+    result = 0
+    power = len(data) - 1
+    for digit in data:
+        result += int(digit) * (int(source) ** power)
+        power -= 1
     return result
 
 def convert_to_symmetric(data, target):
@@ -162,6 +168,14 @@ def convert_to_symmetric(data, target):
     return result
 
 def convert_from_symmetric(data, source):
+    valid_symbols = ["'"]
+    for i in range(-int(source) // 2 + 1, int(source) // 2 + 1):
+	    valid_symbols.append(str(i))
+    for ch in data:
+        if ch not in valid_symbols:
+            return 'Неверный формат данных'
+    if data[-1] == "'":
+            return 'Апостроф ставится перед числом'
     data = data[::-1]
     result = 0
     power = 0
@@ -181,11 +195,11 @@ def convert_from_symmetric(data, source):
 def convert_to(message):
     data, target = message.text.split()
     target = target.lower()
-    if target == 'bergman':
+    if target == 'berg':
         resp = convert_to_bergman(data)
-    elif target == 'zeckendorf':
+    elif target == 'zecken':
         resp = convert_to_zeckendorf(data)
-    elif target == 'factorial':
+    elif target == 'fact':
         resp = convert_to_factorial(data)
     elif '-' in target:
         resp = convert_to_negative(data, target)
@@ -204,11 +218,11 @@ def convert_to(message):
 def convert_from(message):
     data, source = message.text.split()
     source = source.lower()
-    if source == 'bergman':
+    if source == 'berg':
         resp = convert_from_bergman(data)
-    elif source == 'zeckendorf':
+    elif source == 'zecken':
         resp = convert_from_zeckendorf(data)
-    elif source == 'factorial':
+    elif source == 'fact':
         resp = convert_from_factorial(data)
     elif '-' in source:
         resp = convert_from_negative(data, source)
@@ -227,7 +241,7 @@ def convert_from(message):
 def help(message):
     resp = "Вот что я могу:\n/convert_to target - перевод в нетрадиционную СС\n/convert_from" + \
     " source - перевод из нетрадиционной СС\ntarget - результирующая СС\nsourсe - исходная" + \
-    " СС\nДоступные СС:\nbergman - Бергмана\nzeckendorf - Цекендорфа\nfactorial -" + \
+    " СС\nДоступные СС:\nberg - Бергмана\nzecken - Цекендорфа\nfact -" + \
     " факториальная\n-n - n-ая нега-позиционная\nnC - n-ая симметричная (для обозначения отрицательного числа перед ним ставится апостроф)"
     bot.send_message(message.chat.id, resp, parse_mode='HTML')
 
