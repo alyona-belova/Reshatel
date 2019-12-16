@@ -2,8 +2,6 @@ import config
 import telebot
 import math
 
-telebot.apihelper.proxy = {'https': '144.217.74.219:3128'}
-
 bot = telebot.TeleBot(config.access_token)
 
 
@@ -28,6 +26,7 @@ def convert_to_bergman(data):
             result += '0'
     return result
 
+
 def convert_from_bergman(data):
     for ch in data:
         if ch not in {'0', '1', '.'}:
@@ -50,29 +49,30 @@ def convert_from_bergman(data):
     result = int(result)
     return str(result)
 
+
 def convert_to_zeckendorf(data):
     for ch in data:
         if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
             return 'Неверный формат данных'
     data = int(data)
     f0, f1 = 0, 1
-    resnum = [] 
-    num = -1 
-    result = '' 
-    while data != 0: 
-        while f1 <= data: 
+    resnum = []
+    num = -1
+    result = ''
+    while data != 0:
+        while f1 <= data:
             f0, f1 = f1, f0 + f1
-            num += 1 
-            if f1 > data:              
-                data -= f0            
-                resnum.append(num)  
-                f0, f1 = 0, 1      
-                num = -1           
-    i = resnum[0]   
-    while i > 0:    
+            num += 1
+            if f1 > data:
+                data -= f0
+                resnum.append(num)
+                f0, f1 = 0, 1
+                num = -1
+    i = resnum[0]
+    while i > 0:
         k = 0
-        check = False 
-        while k < len(resnum): 
+        check = False
+        while k < len(resnum):
             if i == resnum[k]:
                 result += '1'
                 check = True
@@ -82,20 +82,22 @@ def convert_to_zeckendorf(data):
         i -= 1
     return result
 
+
 def convert_from_zeckendorf(data):
     for ch in data:
         if ch not in {'0', '1'}:
             return 'Неверный формат данных'
-    f0, f1 = 0, 1 
+    f0, f1 = 0, 1
     i = 0
-    data = data[::-1] 
+    data = data[::-1]
     result = 0
-    while i < len(data): 
-        f0, f1 = f1, f0 + f1 
+    while i < len(data):
+        f0, f1 = f1, f0 + f1
         if data[i] == '1':
             result += f1
         i += 1
     return str(result)
+
 
 def convert_to_factorial(data):
     for ch in data:
@@ -111,6 +113,7 @@ def convert_to_factorial(data):
     result = result[::-1]
     return result
 
+
 def convert_from_factorial(data):
     result = 0
     data = data[::-1]
@@ -119,6 +122,7 @@ def convert_from_factorial(data):
             return 'Неверный формат данных'
         result += int(data[i]) * math.factorial(i+1)
     return str(result)
+
 
 def convert_to_negative(data, target):
     for ch in data:
@@ -135,9 +139,10 @@ def convert_to_negative(data, target):
 	    data = data // target
 	    if remainder < 0:
 		    remainder += abs(target)
-		    data += 1	
+		    data += 1
 	    result = str(remainder) + result
     return result
+
 
 def convert_from_negative(data, source):
     valid_symbols = []
@@ -146,7 +151,7 @@ def convert_from_negative(data, source):
     for ch in data:
         if ch not in valid_symbols:
             return 'Неверный формат данных'
-    for ch in target:
+    for ch in source:
         if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'}:
             return 'Неверный формат данных'
     result = 0
@@ -155,6 +160,7 @@ def convert_from_negative(data, source):
         result += int(digit) * (int(source) ** power)
         power -= 1
     return result
+
 
 def convert_to_symmetric(data, target):
     for ch in data:
@@ -196,6 +202,7 @@ def convert_to_symmetric(data, target):
     result = result_1[::-1]
     return result
 
+
 def convert_from_symmetric(data, source):
     valid_symbols = ["'"]
     for i in range(-int(source) // 2 + 1, int(source) // 2 + 1):
@@ -203,7 +210,7 @@ def convert_from_symmetric(data, source):
     for ch in data:
         if ch not in valid_symbols:
             return 'Неверный формат данных'
-    for ch in target:
+    for ch in source:
         if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
             return 'Неверный формат данных'
     if data[-1] == "'":
@@ -222,6 +229,7 @@ def convert_from_symmetric(data, source):
                 result += int(data[i]) * int(source) ** power
             power += 1
     return str(result)
+
 
 @bot.message_handler(commands=['convert_to'])
 def convert_to(message):
@@ -250,6 +258,7 @@ def convert_to(message):
     
     bot.send_message(message.chat.id, resp, parse_mode='HTML')
 
+
 @bot.message_handler(commands=['convert_from'])
 def convert_from(message):
     msg = message.text.split()
@@ -277,6 +286,7 @@ def convert_from(message):
     
     bot.send_message(message.chat.id, resp, parse_mode='HTML')
 
+
 @bot.message_handler(content_types=['text'])
 def help(message):
     resp = "Вот что я могу:\n/convert_to target data - перевод в нетрадиционную СС\n/convert_from" + \
@@ -284,6 +294,7 @@ def help(message):
     " СС\nДоступные СС:\nberg - Бергмана\nzecken - Цекендорфа\nfact -" + \
     " факториальная\n-n - n-ая нега-позиционная\nnC - n-ая симметричная (для обозначения отрицательного числа перед ним ставится апостроф)"
     bot.send_message(message.chat.id, resp, parse_mode='HTML')
+
 
 if __name__ == '__main__':
     bot.polling(none_stop=True)
