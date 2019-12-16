@@ -77,6 +77,9 @@ def convert_to_zeckendorf(data):
     return result
 
 def convert_from_zeckendorf(data):
+    for ch in data:
+        if ch not in {'0', '1'}:
+            return 'Неверный формат данных'
     f0, f1 = 0, 1 
     i = 0
     data = data[::-1] 
