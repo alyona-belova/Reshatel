@@ -77,7 +77,7 @@ def convert_to_zeckendorf(data):
                 result += '1'
                 check = True
             k += 1
-        if check == False:
+        if check is False:
             result += '0'
         i -= 1
     return result
@@ -135,12 +135,12 @@ def convert_to_negative(data, target):
     data = int(data)
     target = int(target)
     while data != 0:
-	    remainder = data % target
-	    data = data // target
-	    if remainder < 0:
-		    remainder += abs(target)
-		    data += 1
-	    result = str(remainder) + result
+        remainder = data % target
+        data = data // target
+        if remainder < 0:
+            remainder += abs(target)
+            data += 1
+        result = str(remainder) + result
     return result
 
 
@@ -206,7 +206,7 @@ def convert_to_symmetric(data, target):
 def convert_from_symmetric(data, source):
     valid_symbols = ["'"]
     for i in range(-int(source) // 2 + 1, int(source) // 2 + 1):
-	    valid_symbols.append(str(i))
+        valid_symbols.append(str(i))
     for ch in data:
         if ch not in valid_symbols:
             return 'Неверный формат данных'
@@ -214,7 +214,7 @@ def convert_from_symmetric(data, source):
         if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
             return 'Неверный формат данных'
     if data[-1] == "'":
-            return 'Апостроф ставится перед числом'
+        return 'Апостроф ставится перед числом'
     data = data[::-1]
     result = 0
     power = 0
@@ -247,7 +247,7 @@ def convert_to(message):
             resp = convert_to_factorial(data)
         elif '-' in target:
             resp = convert_to_negative(data, target)
-        elif 'с' in target:
+        elif 'с' in target or 'с' in target:
             target = target[:-1]
             if int(target) % 2 == 0:
                 resp = 'Симметричные СС определены только для нечётных оснований!'
@@ -255,7 +255,7 @@ def convert_to(message):
                 resp = convert_to_symmetric(data, target)
         else:
             resp = 'Данная СС недоступна'
-    
+
     bot.send_message(message.chat.id, resp, parse_mode='HTML')
 
 
@@ -275,7 +275,7 @@ def convert_from(message):
             resp = convert_from_factorial(data)
         elif '-' in source:
             resp = convert_from_negative(data, source)
-        elif 'с' in source:
+        elif 'с' in source or 'с' in source:
             source = source[:-1]
             if int(source) % 2 == 0:
                 resp = 'Симметричные СС определены только для нечётных оснований!'
@@ -283,7 +283,7 @@ def convert_from(message):
                 resp = convert_from_symmetric(data, source)
         else:
             resp = 'Данная СС недоступна'
-    
+
     bot.send_message(message.chat.id, resp, parse_mode='HTML')
 
 
