@@ -124,6 +124,9 @@ def convert_to_negative(data, target):
     for ch in data:
         if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'}:
             return 'Неверный формат данных'
+    for ch in target:
+        if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'}:
+            return 'Неверный формат данных'
     result = ''
     data = int(data)
     target = int(target)
@@ -143,6 +146,9 @@ def convert_from_negative(data, source):
     for ch in data:
         if ch not in valid_symbols:
             return 'Неверный формат данных'
+    for ch in target:
+        if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'}:
+            return 'Неверный формат данных'
     result = 0
     power = len(data) - 1
     for digit in data:
@@ -153,6 +159,9 @@ def convert_from_negative(data, source):
 def convert_to_symmetric(data, target):
     for ch in data:
         if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'}:
+            return 'Неверный формат данных'
+    for ch in target:
+        if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
             return 'Неверный формат данных'
     data = int(data)
     if data < 0:
@@ -194,6 +203,9 @@ def convert_from_symmetric(data, source):
     for ch in data:
         if ch not in valid_symbols:
             return 'Неверный формат данных'
+    for ch in target:
+        if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
+            return 'Неверный формат данных'
     if data[-1] == "'":
             return 'Апостроф ставится перед числом'
     data = data[::-1]
@@ -213,28 +225,9 @@ def convert_from_symmetric(data, source):
 
 @bot.message_handler(commands=['convert_to'])
 def convert_to(message):
-<<<<<<< HEAD
     msg = message.text.split()
     if len(msg) < 3:
         resp = 'Недостаточно данных'
-=======
-    _, target, data = message.text.split()
-    target = target.lower()
-    if target == 'berg':
-        resp = convert_to_bergman(data)
-    elif target == 'zecken':
-        resp = convert_to_zeckendorf(data)
-    elif target == 'fact':
-        resp = convert_to_factorial(data)
-    elif '-' in target:
-        resp = convert_to_negative(data, target)
-    elif 'с' in target:
-        target = target[:-1]
-        if int(target) % 2 == 0:
-            resp = 'Симметричные СС определены только для нечётных оснований!'
-        else:
-            resp = convert_to_symmetric(data, target)
->>>>>>> ab8b6b46b00c641b6ac8c8ea743380c1eb0ca02d
     else:
         _, target, data = msg
         target = target.lower()
@@ -259,28 +252,9 @@ def convert_to(message):
 
 @bot.message_handler(commands=['convert_from'])
 def convert_from(message):
-<<<<<<< HEAD
     msg = message.text.split()
     if len(msg) < 3:
         resp = 'Недостаточно данных'
-=======
-    _, source, data = message.text.split()
-    source = source.lower()
-    if source == 'berg':
-        resp = convert_from_bergman(data)
-    elif source == 'zecken':
-        resp = convert_from_zeckendorf(data)
-    elif source == 'fact':
-        resp = convert_from_factorial(data)
-    elif '-' in source:
-        resp = convert_from_negative(data, source)
-    elif 'с' in source:
-        source = source[:-1]
-        if int(source) % 2 == 0:
-            resp = 'Симметричные СС определены только для нечётных оснований!'
-        else:
-            resp = convert_from_symmetric(data, source)
->>>>>>> ab8b6b46b00c641b6ac8c8ea743380c1eb0ca02d
     else:
         _, source, data = msg
         source = source.lower()
