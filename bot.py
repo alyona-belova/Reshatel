@@ -2,12 +2,15 @@ import config
 import telebot
 import math
 
-telebot.apihelper.proxy = {'https': '157.245.51.80:3128'}
+telebot.apihelper.proxy = {'https': '144.217.74.219:3128'}
 
 bot = telebot.TeleBot(config.access_token)
 
 
 def convert_to_bergman(data):
+    for ch in data:
+        if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
+            return 'Неверный формат данных'
     Phi = (1 + 5 ** 0.5) / 2
     power = 1
     result = ''
@@ -48,6 +51,9 @@ def convert_from_bergman(data):
     return str(result)
 
 def convert_to_zeckendorf(data):
+    for ch in data:
+        if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
+            return 'Неверный формат данных'
     data = int(data)
     f0, f1 = 0, 1
     resnum = [] 
@@ -92,6 +98,9 @@ def convert_from_zeckendorf(data):
     return str(result)
 
 def convert_to_factorial(data):
+    for ch in data:
+        if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
+            return 'Неверный формат данных'
     data = int(data)
     i = 2
     result = ''
@@ -106,10 +115,15 @@ def convert_from_factorial(data):
     result = 0
     data = data[::-1]
     for i in range(len(data)):
+        if int(data[i]) >= i + 2:
+            return 'Неверный формат данных'
         result += int(data[i]) * math.factorial(i+1)
     return str(result)
 
 def convert_to_negative(data, target):
+    for ch in data:
+        if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'}:
+            return 'Неверный формат данных'
     result = ''
     data = int(data)
     target = int(target)
@@ -137,6 +151,9 @@ def convert_from_negative(data, source):
     return result
 
 def convert_to_symmetric(data, target):
+    for ch in data:
+        if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'}:
+            return 'Неверный формат данных'
     data = int(data)
     if data < 0:
         negative = 1
@@ -196,54 +213,62 @@ def convert_from_symmetric(data, source):
 
 @bot.message_handler(commands=['convert_to'])
 def convert_to(message):
-    data, target = message.text.split()
-    target = target.lower()
-    if target == 'berg':
-        resp = convert_to_bergman(data)
-    elif target == 'zecken':
-        resp = convert_to_zeckendorf(data)
-    elif target == 'fact':
-        resp = convert_to_factorial(data)
-    elif '-' in target:
-        resp = convert_to_negative(data, target)
-    elif 'с' in target:
-        target = target[:-1]
-        if int(target) % 2 == 0:
-            resp = 'Симметричные СС определены только для нечётных оснований!'
-        else:
-            resp = convert_to_symmetric(data, target)
+    msg = message.text.split()
+    if len(msg) < 3:
+        resp = 'Недостаточно данных'
     else:
-        resp = 'Данная СС пока недоступна'
+        _, target, data = msg
+        target = target.lower()
+        if target == 'berg':
+            resp = convert_to_bergman(data)
+        elif target == 'zecken':
+            resp = convert_to_zeckendorf(data)
+        elif target == 'fact':
+            resp = convert_to_factorial(data)
+        elif '-' in target:
+            resp = convert_to_negative(data, target)
+        elif 'с' in target:
+            target = target[:-1]
+            if int(target) % 2 == 0:
+                resp = 'Симметричные СС определены только для нечётных оснований!'
+            else:
+                resp = convert_to_symmetric(data, target)
+        else:
+            resp = 'Данная СС недоступна'
     
     bot.send_message(message.chat.id, resp, parse_mode='HTML')
 
 @bot.message_handler(commands=['convert_from'])
 def convert_from(message):
-    data, source = message.text.split()
-    source = source.lower()
-    if source == 'berg':
-        resp = convert_from_bergman(data)
-    elif source == 'zecken':
-        resp = convert_from_zeckendorf(data)
-    elif source == 'fact':
-        resp = convert_from_factorial(data)
-    elif '-' in source:
-        resp = convert_from_negative(data, source)
-    elif 'с' in source:
-        source = source[:-1]
-        if int(source) % 2 == 0:
-            resp = 'Симметричные СС определены только для нечётных оснований!'
-        else:
-            resp = convert_from_symmetric(data, source)
+    msg = message.text.split()
+    if len(msg) < 3:
+        resp = 'Недостаточно данных'
     else:
-        resp = 'Данная СС пока недоступна'
+        _, source, data = msg
+        source = source.lower()
+        if source == 'berg':
+            resp = convert_from_bergman(data)
+        elif source == 'zecken':
+            resp = convert_from_zeckendorf(data)
+        elif source == 'fact':
+            resp = convert_from_factorial(data)
+        elif '-' in source:
+            resp = convert_from_negative(data, source)
+        elif 'с' in source:
+            source = source[:-1]
+            if int(source) % 2 == 0:
+                resp = 'Симметричные СС определены только для нечётных оснований!'
+            else:
+                resp = convert_from_symmetric(data, source)
+        else:
+            resp = 'Данная СС недоступна'
     
     bot.send_message(message.chat.id, resp, parse_mode='HTML')
 
 @bot.message_handler(content_types=['text'])
 def help(message):
-    resp = "Вот что я могу:\n/convert_to target - перевод в нетрадиционную СС\n/convert_from" + \
-    " source - перевод из нетрадиционной СС\ntarget - результирующая СС\nsourсe - исходная" + \
+    resp = "Вот что я могу:\n/convert_to target data - перевод в нетрадиционную СС\n/convert_from" + \
+    " source data - перевод из нетрадиционной СС\ntarget - результирующая СС\nsourсe - исходная СС\ndata - исходное число" + \
     " СС\nДоступные СС:\nberg - Бергмана\nzecken - Цекендорфа\nfact -" + \
     " факториальная\n-n - n-ая нега-позиционная\nnC - n-ая симметричная (для обозначения отрицательного числа перед ним ставится апостроф)"
     bot.send_message(message.chat.id, resp, parse_mode='HTML')
