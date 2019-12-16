@@ -2,7 +2,7 @@ import config
 import telebot
 import math
 
-telebot.apihelper.proxy = {'https': '157.245.51.80:3128'}
+telebot.apihelper.proxy = {'https': '144.217.74.219:3128'}
 
 bot = telebot.TeleBot(config.access_token)
 
@@ -196,7 +196,7 @@ def convert_from_symmetric(data, source):
 
 @bot.message_handler(commands=['convert_to'])
 def convert_to(message):
-    data, target = message.text.split()
+    target, data = message.text.split()
     target = target.lower()
     if target == 'berg':
         resp = convert_to_bergman(data)
@@ -219,7 +219,7 @@ def convert_to(message):
 
 @bot.message_handler(commands=['convert_from'])
 def convert_from(message):
-    data, source = message.text.split()
+    source, data = message.text.split()
     source = source.lower()
     if source == 'berg':
         resp = convert_from_bergman(data)
@@ -242,8 +242,8 @@ def convert_from(message):
 
 @bot.message_handler(content_types=['text'])
 def help(message):
-    resp = "Вот что я могу:\n/convert_to target - перевод в нетрадиционную СС\n/convert_from" + \
-    " source - перевод из нетрадиционной СС\ntarget - результирующая СС\nsourсe - исходная" + \
+    resp = "Вот что я могу:\n/convert_to target data - перевод в нетрадиционную СС\n/convert_from" + \
+    " source data - перевод из нетрадиционной СС\ntarget - результирующая СС\nsourсe - исходная СС\ndata - исходное число" + \
     " СС\nДоступные СС:\nberg - Бергмана\nzecken - Цекендорфа\nfact -" + \
     " факториальная\n-n - n-ая нега-позиционная\nnC - n-ая симметричная (для обозначения отрицательного числа перед ним ставится апостроф)"
     bot.send_message(message.chat.id, resp, parse_mode='HTML')
