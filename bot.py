@@ -2,7 +2,7 @@ import config
 import telebot
 import math
 
-telebot.apihelper.proxy = {'https': 'https://51.158.120.84:8811'}
+#telebot.apihelper.proxy = {'https': 'https://51.158.120.84:8811'}
 
 bot = telebot.TeleBot(config.access_token)
 
