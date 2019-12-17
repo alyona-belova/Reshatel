@@ -2,6 +2,8 @@ import config
 import telebot
 import math
 
+telebot.apihelper.proxy = {'https': 'https://51.158.120.84:8811'}
+
 bot = telebot.TeleBot(config.access_token)
 
 
@@ -166,9 +168,6 @@ def convert_to_symmetric(data, target):
     for ch in data:
         if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'}:
             return 'Неверный формат данных'
-    for ch in target:
-        if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
-            return 'Неверный формат данных'
     data = int(data)
     if data < 0:
         negative = 1
@@ -210,9 +209,6 @@ def convert_from_symmetric(data, source):
     for ch in data:
         if ch not in valid_symbols:
             return 'Неверный формат данных'
-    for ch in source:
-        if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
-            return 'Неверный формат данных'
     if data[-1] == "'":
         return 'Апостроф ставится перед числом'
     data = data[::-1]
@@ -249,6 +245,9 @@ def convert_to(message):
             resp = convert_to_negative(data, target)
         elif 'с' in target or 'с' in target:
             target = target[:-1]
+            for ch in target:
+                if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
+                    return 'Неверный формат данных'
             if int(target) % 2 == 0:
                 resp = 'Симметричные СС определены только для нечётных оснований!'
             else:
@@ -277,6 +276,9 @@ def convert_from(message):
             resp = convert_from_negative(data, source)
         elif 'с' in source or 'с' in source:
             source = source[:-1]
+             for ch in source:
+                if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
+                    return 'Неверный формат данных'
             if int(source) % 2 == 0:
                 resp = 'Симметричные СС определены только для нечётных оснований!'
             else:
