@@ -2,19 +2,23 @@ import config
 import telebot
 import math
 
-#telebot.apihelper.proxy = {'https': 'https://51.158.120.84:8811'}
-
 bot = telebot.TeleBot(config.access_token)
 
 
 def convert_to_bergman(data):
     for ch in data:
-        if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
+        if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ','}:
             return 'Неверный формат данных'
+    data_1 = ''
+    for i in range(len(data)):    
+        if data[i] == ',':
+            data_1 += '.'
+        else:
+            data_1 += data[i]
     Phi = (1 + 5 ** 0.5) / 2
     power = 1
     result = ''
-    data = float(data)
+    data = float(data_1)
     while power <= data:
         power *= Phi
     while data > 0:
@@ -31,10 +35,17 @@ def convert_to_bergman(data):
 
 def convert_from_bergman(data):
     for ch in data:
-        if ch not in {'0', '1', '.'}:
+        if ch not in {'0', '1', '.', ','}:
             return 'Неверный формат данных'
+    data_1 = ''
+    for i in range(len(data)):    
+        if data[i] == ',':
+            data_1 += '.'
+        else:
+            data_1 += data[i]
     Phi = (1 + 5 ** 0.5) / 2
     result = 0
+    data = data_1
     dot = data.index('.')
     data1 = data[:dot]
     data2 = data[dot+1:]
@@ -136,6 +147,8 @@ def convert_to_negative(data, target):
     result = ''
     data = int(data)
     target = int(target)
+    if target < -10:
+        return "Основание СС должно быть больше -10"
     while data != 0:
         remainder = data % target
         data = data // target
@@ -156,6 +169,8 @@ def convert_from_negative(data, source):
     for ch in source:
         if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'}:
             return 'Неверный формат данных'
+    if int(source) < -10:
+        return "Основание СС должно быть больше -10"
     result = 0
     power = len(data) - 1
     for digit in data:
@@ -175,6 +190,8 @@ def convert_to_symmetric(data, target):
         negative = 0
     data = abs(data)
     target = int(target)
+    if target > 20:
+        return "Основание СС должно быть меньше 20"
     result = ''
     mod = ''
     for i in range(target // 2 + 1):
@@ -198,7 +215,8 @@ def convert_to_symmetric(data, target):
             else:
                 if result[i] != "'":
                     result_1 = result_1 + result[i] + "'"
-    result = result_1[::-1]
+        result = result_1
+    result = result[::-1]
     return result
 
 
@@ -211,6 +229,8 @@ def convert_from_symmetric(data, source):
             return 'Неверный формат данных'
     if data[-1] == "'":
         return 'Апостроф ставится перед числом'
+    if int(source) > 20:
+        return "Основание СС должно быть меньше 20"
     data = data[::-1]
     result = 0
     power = 0
@@ -227,11 +247,13 @@ def convert_from_symmetric(data, source):
     return str(result)
 
 
-@bot.message_handler(commands=['convert_to'])
+@bot.message_handler(commands=['to'])
 def convert_to(message):
     msg = message.text.split()
     if len(msg) < 3:
         resp = 'Недостаточно данных'
+    elif len(msg) > 3:
+        resp = 'Слишком много данных'
     else:
         _, target, data = msg
         target = target.lower()
@@ -243,28 +265,29 @@ def convert_to(message):
             resp = convert_to_factorial(data)
         elif '-' in target:
             resp = convert_to_negative(data, target)
-        elif 'c' in target or 'с' in target:
+        elif target[-1] in {'c', 'с'}:  
             target = target[:-1]
             for ch in target:
                 if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
                     resp = 'Неверный формат данных'
                     break
-                else:
-                    if int(target) % 2 == 0:
-                        resp = 'Симметричные СС определены только для нечётных оснований!'
-                    else:
-                        resp = convert_to_symmetric(data, target)
+            if int(target) % 2 == 0:
+                resp = 'Симметричные СС определены только для нечётных оснований!'
+            else:
+                resp = convert_to_symmetric(data, target)
         else:
             resp = 'Данная СС недоступна'
 
     bot.send_message(message.chat.id, resp, parse_mode='HTML')
 
 
-@bot.message_handler(commands=['convert_from'])
+@bot.message_handler(commands=['from'])
 def convert_from(message):
     msg = message.text.split()
     if len(msg) < 3:
         resp = 'Недостаточно данных'
+    elif len(msg) > 3:
+        resp = 'Слишком много данных'
     else:
         _, source, data = msg
         source = source.lower()
@@ -276,29 +299,34 @@ def convert_from(message):
             resp = convert_from_factorial(data)
         elif '-' in source:
             resp = convert_from_negative(data, source)
-        elif 'c' in source or 'с' in source:
+        elif source[-1] in {'c', 'с'}: 
             source = source[:-1]
             for ch in source:
                 if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
                     resp = 'Неверный формат данных'
                     break
-                else:
-                    if int(source) % 2 == 0:
-                        resp = 'Симметричные СС определены только для нечётных оснований!'
-                    else:
-                        resp = convert_from_symmetric(data, source)
+            if int(source) % 2 == 0:
+                resp = 'Симметричные СС определены только для нечётных оснований!'
+            else:
+                resp = convert_from_symmetric(data, source)
         else:
             resp = 'Данная СС недоступна'
 
     bot.send_message(message.chat.id, resp, parse_mode='HTML')
 
 
-@bot.message_handler(content_types=['text'])
+@bot.message_handler(commands=['help'])
 def help(message):
-    resp = "<b>Вот что я могу:</b>\n/convert_to target data - перевод в нетрадиционную СС\n/convert_from" + \
+    resp = "Если у вас возникли проблемы с чат-ботом, пожалуйста, сообщите нам об этом:\nreshatel-itmo@yandex.ru"
+    bot.send_message(message.chat.id, resp, parse_mode='HTML')
+
+
+@bot.message_handler(content_types=['text'])
+def info(message):
+    resp = "<b>Вот что я могу:</b>\n/to target data - перевод в нетрадиционную СС\n/from" + \
     " source data - перевод из нетрадиционной СС\n\ntarget - результирующая СС\nsourсe - исходная СС\ndata - исходное число" + \
     " СС\n\n<b>Доступные СС:</b>\nberg - Бергмана\nzecken - Цекендорфа\nfact -" + \
-    " факториальная\n-n - n-ая нега-позиционная\nnC - n-ая симметричная (для обозначения отрицательного числа перед ним ставится апостроф)"
+    " факториальная\n-n - n-ая нега-позиционная\nnC - n-ая симметричная (для обозначения отрицательного числа перед ним ставится апостроф)\nn - основание СС\n\n<b>Пример:</b>\n/to berg 5 - перевод числа 5 в СС Бергмана\n/from 5c '12'1 - перевод числа '12'1 из симметричной СС с основанием 5\n/to -7 5 - перевод числа 5 в СС с основанием -7"
     bot.send_message(message.chat.id, resp, parse_mode='HTML')
 
 
