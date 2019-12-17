@@ -243,15 +243,17 @@ def convert_to(message):
             resp = convert_to_factorial(data)
         elif '-' in target:
             resp = convert_to_negative(data, target)
-        elif 'с' in target or 'с' in target:
+        elif 'c' in target or 'с' in target:
             target = target[:-1]
             for ch in target:
                 if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
-                    return 'Неверный формат данных'
-            if int(target) % 2 == 0:
-                resp = 'Симметричные СС определены только для нечётных оснований!'
-            else:
-                resp = convert_to_symmetric(data, target)
+                    resp = 'Неверный формат данных'
+                    break
+                else:
+                    if int(target) % 2 == 0:
+                        resp = 'Симметричные СС определены только для нечётных оснований!'
+                    else:
+                        resp = convert_to_symmetric(data, target)
         else:
             resp = 'Данная СС недоступна'
 
@@ -274,15 +276,17 @@ def convert_from(message):
             resp = convert_from_factorial(data)
         elif '-' in source:
             resp = convert_from_negative(data, source)
-        elif 'с' in source or 'с' in source:
+        elif 'c' in source or 'с' in source:
             source = source[:-1]
-             for ch in source:
+            for ch in source:
                 if ch not in {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}:
-                    return 'Неверный формат данных'
-            if int(source) % 2 == 0:
-                resp = 'Симметричные СС определены только для нечётных оснований!'
-            else:
-                resp = convert_from_symmetric(data, source)
+                    resp = 'Неверный формат данных'
+                    break
+                else:
+                    if int(source) % 2 == 0:
+                        resp = 'Симметричные СС определены только для нечётных оснований!'
+                    else:
+                        resp = convert_from_symmetric(data, source)
         else:
             resp = 'Данная СС недоступна'
 
