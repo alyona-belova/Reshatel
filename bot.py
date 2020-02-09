@@ -46,6 +46,12 @@ def convert_from_bergman(data):
     Phi = (1 + 5 ** 0.5) / 2
     result = 0
     data = data_1
+    c = False
+    for ch in data:
+        if ch == '.':
+            c = True
+    if c == False:
+        data = data + '.'
     dot = data.index('.')
     data1 = data[:dot]
     data2 = data[dot+1:]
@@ -59,7 +65,7 @@ def convert_from_bergman(data):
         if ch == '1':
             result += Phi ** power2
         power2 -= 1
-    result = int(result)
+    result = float(result)
     return str(result)
 
 
@@ -221,13 +227,13 @@ def convert_to_symmetric(data, target):
 
 
 def convert_from_symmetric(data, source):
-    valid_symbols = ["'"]
+    valid_symbols = ["'", "‘"]
     for i in range(-int(source) // 2 + 1, int(source) // 2 + 1):
         valid_symbols.append(str(i))
     for ch in data:
         if ch not in valid_symbols:
             return 'Неверный формат данных'
-    if data[-1] == "'":
+    if data[-1] == "'" or data[-1] == "‘":
         return 'Апостроф ставится перед числом'
     if int(source) > 20:
         return "Основание СС должно быть меньше 20"
@@ -235,9 +241,9 @@ def convert_from_symmetric(data, source):
     result = 0
     power = 0
     for i in range(len(data)):
-        if data[i] != "'":
+        if data[i] != "'" and data[i] != "‘":
             if i < len(data) - 1:
-                if data[i+1] == "'":
+                if data[i+1] == "'" or data[i+1] == "‘":
                     result -= int(data[i]) * int(source) ** power
                 else:
                     result += int(data[i]) * int(source) ** power
